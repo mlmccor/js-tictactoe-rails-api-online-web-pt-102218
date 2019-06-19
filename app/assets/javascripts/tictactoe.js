@@ -1,5 +1,5 @@
 // Code your JavaScript / jQuery solution here
-
+let spaces = window.document.querySelectorAll('td');
 const WIN_COMBINATIONS = [
 [0,1,2],
 [3,4,5],
@@ -22,7 +22,11 @@ function player() {
 }
 
 function updateState(square) {
-  square.innerHTML = player()
+  if (square.innerHTML === '') {
+    square.innerHTML = player()
+  } else {
+    return false
+  }
 }
 
 function setMessage(string) {
@@ -30,25 +34,65 @@ function setMessage(string) {
 }
 
 function checkWinner() {
-  let state = window.document.querySelectorAll('td')
+  let win = 0
 
-  WIN_COMBINATIONS.forEach(function () {
-    let index1 = this[0]
-    let index2 = this[1]
-    let index3 = this[2]
+  WIN_COMBINATIONS.forEach(function (combo) {
+    let index1 = combo[0]
+    let index2 = combo[1]
+    let index3 = combo[2]
 
-    let position1 = state[index1].innerHTML
-    let position2 = state[index2].innerHTML
-    let position3 = state[index3].innerHTML
+    let position1 = spaces[index1].innerHTML
+    let position2 = spaces[index2].innerHTML
+    let position3 = spaces[index3].innerHTML
 
-    if (position1 == "X" && position2 == "X" && position3 == "X") {
+    if (position1 === "X" && position2 === "X" && position3 === "X") {
       setMessage("Player X Won!")
-      return true
-    } else if (position1 == "O" && position2 == "O" && position3 == "O") {
+      return win = 1
+    } else if (position1 === "O" && position2 === "O" && position3 === "O") {
       setMessage("Player O Won!")
-      return true
+      return win = 1
     } else {
       return false
     }
   })
+  return !!win
 }
+
+function newGame() {
+
+}
+
+
+function doTurn(square) {
+  if (updateState(square) === false) {
+    setMessage("Please select an unoccupied squre.")
+  } else {
+    this.turn += 1
+  }
+  if (checkWinner()) {
+    this.turn = 0
+    spaces.forEach(function(space) {
+      space.innerHTML = ''
+
+    })
+  } else {
+    if (this.turn === 9) {
+      setMessage('Tie game.')
+      this.turn = 0
+      spaces.forEach(function(space) {
+        space.innerHTML = ''
+      })
+    }
+  }
+}
+
+function attachListeners() {
+    let spaces = window.document.querySelectorAll('td');
+
+    spaces.forEach( function (space) {
+      space.addEventListener('click', function (event) {
+        doTurn(space)
+      })
+    })
+}
+window.onload = attachListeners()
